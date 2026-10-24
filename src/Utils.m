@@ -1,8 +1,49 @@
 #import "Utils.h"
 
+// Locked focus config: these values are baked in and ignore NSUserDefaults
+static NSDictionary *SCILockedBoolPrefs(void) {
+    static NSDictionary *lockedPrefs;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        lockedPrefs = @{
+            // Navigation
+            @"hide_reels_tab": @(YES),
+            @"hide_explore_tab": @(YES),
+
+            // Feed
+            @"no_suggested_post": @(YES),
+            @"no_suggested_account": @(YES),
+            @"no_suggested_reels": @(YES),
+            @"no_suggested_threads": @(YES),
+            @"disable_feed_autoplay": @(YES),
+
+            // Reels
+            @"disable_scrolling_reels": @(YES),
+
+            // Focus/Distractions
+            @"no_suggested_users": @(YES),
+            @"hide_explore_grid": @(YES),
+            @"hide_trending_searches": @(YES),
+
+            // General
+            @"hide_ads": @(YES),
+            @"hide_meta_ai": @(YES),
+
+            // Escape hatches (FLEX can edit defaults at runtime)
+            @"flex_instagram": @(NO),
+            @"flex_app_launch": @(NO),
+            @"flex_app_start": @(NO)
+        };
+    });
+    return lockedPrefs;
+}
+
 @implementation SCIUtils
 
 + (BOOL)getBoolPref:(NSString *)key {
+    NSNumber *lockedValue = SCILockedBoolPrefs()[key];
+    if (lockedValue) return [lockedValue boolValue];
+
     if (![key length] || [[NSUserDefaults standardUserDefaults] objectForKey:key] == nil) return false;
 
     return [[NSUserDefaults standardUserDefaults] boolForKey:key];
@@ -90,11 +131,7 @@
     [topMostController() presentViewController:acVC animated:true completion:nil];
 }
 + (void)showSettingsVC:(UIWindow *)window {
-    UIViewController *rootController = [window rootViewController];
-    SCISettingsViewController *settingsViewController = [SCISettingsViewController new];
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
-    
-    [rootController presentViewController:navigationController animated:YES completion:nil];
+    // Settings are locked; never open the settings menu
 }
 
 // Colours
