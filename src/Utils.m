@@ -8,7 +8,7 @@ static NSDictionary *SCILockedBoolPrefs(void) {
         lockedPrefs = @{
             // Navigation
             @"hide_reels_tab": @(YES),
-            @"hide_explore_tab": @(YES),
+            @"hide_explore_tab": @(NO), // keep search; the grid is hidden below
 
             // Feed
             @"no_suggested_post": @(YES),
